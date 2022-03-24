@@ -1,0 +1,101 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+First Section
+
+///////////////////////////////////////
+First video /////////////////////////// - EJBs and CDI managed beans
+///////////////////////////////////////
+
+What is the stateless annotation? -> https://stackoverflow.com/questions/13487987/where-to-use-ejb-3-1-and-cdi/13504763#13504763
+stateless vs stateful -> A Stateful bean will have state associated with it for each request from the same client. Stateless beans have no client specific state and a single instance could be used concurrently, threadsafe, between multiple clients requests.
+
+How to tell if its EJB or CDI?
+EJB -> has @Stateless @Stateful or @Singleton annotated on the class
+CDI -> has no class annotation
+
+///////////////////////////////////////
+second video ////////////////////////// - CDI producers
+///////////////////////////////////////
+
+producers? -> a way to inject common values for enums  @Produces annotation -> can be used both in methods or fields
+
+///////////////////////////////////////
+third video /////////////////////////// - Qualifiers
+///////////////////////////////////////
+
+Qualifier annotations -> make sure the default stuff is being assigned to it -> @Named works but it can be ambigous and not type safe -> create custom qualifer annotation, see @Diesel in the project
+
+
+///////////////////////////////////////
+fourth video ////////////////////////// - Scopes
+///////////////////////////////////////
+
+Scopes ->
+
+EJB
+@Stateless -> pooled by container, unsure which instance is used when a request arrives. Should never have data or state
+@Statefull -> its user request scopped and its maintained throughout the request, can contain data or state
+@Singleton -> locked single instance for the whole application
+
+CDI
+@ApplicationScopped -> similar to @Singleton
+@RequestScopped -> similar to @Statefull
+@Dependent -> default scope no annotation needed, these depend on the injection point lifecycle: carfactory example -> the carRepository lifecycle is dependent on the carfactory lifecycle and only 1 is pooled
+
+///////////////////////////////////////
+fifth video /////////////////////////// - Events
+///////////////////////////////////////
+
+Events -> Domain events, Synchronous
+
+Perfect way to couple logic loosely together, needs an Event<T> in which T is a POJO containing the necessary data and then
+an observer class watching for the event fired on that class that implements some logic.
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Second section
+
+///////////////////////////////////////
+First video /////////////////////////// - JAX-RS resources
+///////////////////////////////////////
+
+Http endpoints -> JAX RS
+JAXRSConfiguration extends Application -> defines the root path and other application configuration
+car resource -> path defines the path after baseUrl/JAXRSConfigurationPath/finalPath
+Produces annotation on class means that all the endpoints will produce that, further specification can be done in every endpoint
+@GET, @POST , etc... the general use HTTP methods
+In case of specification param on the get retrieve cars !!!!!!!!!POJO needs a default constructor + full constructor and the POJO fields cannot be final!!!!!!!!
+
+///////////////////////////////////////
+second video ////////////////////////// Integrating Json-B
+///////////////////////////////////////
+
+Integrating JSON-B from JSON binding
+@JsonTransient -> field wont be serialized when converting obj to byte
+@JsonProperty -> replaces the key name on the final json conversion to the string present on the annotation
+
+
+///////////////////////////////////////
+third video /////////////////////////// - Integrating JSON-P
+///////////////////////////////////////
+
+JSON - P -> creating and using JSON objects with java 8 streams
+JsonArray -> type that returns an Array of Json objects as response
+JsonObject -> type that represents the json object, can be accessed the same way as it is in JS
+Json.createObjectBuilder() -> initializes a json object and returns it so it is possible to chain add and other nested objects too
+
+
+!!!!Removed specification default constructor (and final keyword form fields) since it is now immutable since it is only created and used in a single method!!!
+
+///////////////////////////////////////
+fourth video ////////////////////////// - Custom HTTP responses
+///////////////////////////////////////
+
+URI and using response -> USE URIInfo to dynamically build the URI through the context.
+both of these objects use the builder pattern
+
+///////////////////////////////////////
+fifth video /////////////////////////// - Validating communication
+///////////////////////////////////////
+
