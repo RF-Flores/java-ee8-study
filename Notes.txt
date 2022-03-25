@@ -110,3 +110,65 @@ JaxRS validations -> @NotNull , @Size , @Min, @Max, @Email... etc
 CUSTOM VALIDATOR -> see EnvironmentalFiendly annotation -> EnvironmentalFriendlyValidator -> annontation in filed, param, etc
 !!!This validator was made for specification, it is only meant for the createCar endpoint!!!!
 Another validation option is to use the Validator from javax.validation.Validator;
+
+
+///////////////////////////////////////
+sixth video /////////////////////////// - Exception handling
+///////////////////////////////////////
+
+JaxRS can intercept exceptions and build a custom response for it, it needs the specific exception created
+the handler created -> see CarCreationExceptionHandler with the @Provider annotation
+See also ConstrainViolationExceptionHandler -> it builds a custom response to any bean validation exception
+
+However, if CarCreationException extends runtimeException it will be logged, this is not the desired effect.
+A solution is to implement the throws in the method (polutes the programming model). Another solution is to add @ApplicationException
+So with the annotation the exception will no longer be wrapped as an EJB exception but as a ApplicationException
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Third section
+
+///////////////////////////////////////
+First video /////////////////////////// - Mapping Domain entities with JPA
+///////////////////////////////////////
+
+Annotate domain model with @Entity to map it, @Table to define the table name --> see Car model
+persistance.xml MUST BE inside the folder src/main/resouces/META-INF
+must define the Persistence unit
+Entity manager can be instanced in the controller with @PersistenceContext with optional string to point to a specific one
+
+@NamedQuerries(
+{@NamedQuery(name ="..." query = "JQL query statement")}
+) -> This can be done to make easy to use general queries. to add JQL parameters do ?1 , ?2 and etc, when creating the query,
+add .setParameter(1, "someString") to set the parameter for example.
+OR
+use :parameterName and then .setparameter("parameterName", "some str or object")
+
+entityManager.find(ModelClass.class, "ID string or number") -> to find a specific entity in the db.
+
+///////////////////////////////////////
+second video ////////////////////////// - Entity Relations
+///////////////////////////////////////
+
+for enum types that need to be persisted -> @Enumerated(EnumType.STRING) from string enums.
+
+Seat model has a SeatMaterial which is an enum
+Seat model has a Seatbelt is domain driven design value object which means it is not an entity so we dont care if its identifiable
+SeatBelt has a SeatBeltModel which is an enum
+
+To relate an entity with another one use @OneToMany, OneToOne, etc.
+cascade ->  CascadeType.All when creating a new one it will recursively create all the other entities
+fetch -> fetchType.Eager will do eager fetching
+
+@JoinColumn(name = "seats", nullable = false) --> this will be the name of the column with the external key
+
+domain driven design value object -> should be annotated with @Embedded when they are fields in other entities and
+the class should have @Embeddable
+
+This means that the SeatBelt is a Embeddable it will take every field it has (SeatBeltModel enum) and put them in a collumn
+on the seats table.
+
+///////////////////////////////////////
+third video /////////////////////////// - Datasources
+///////////////////////////////////////

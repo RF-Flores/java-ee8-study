@@ -5,6 +5,7 @@ import pers.ricardo.entity.Car;
 import pers.ricardo.entity.Color;
 
 import javax.inject.Inject;
+import java.util.Random;
 import java.util.UUID;
 
 public class CarFactory {
@@ -15,6 +16,10 @@ public class CarFactory {
     private Color defaultCarColor;
 
     public Car createCar(Specification specification) {
+        //Forcing a exception
+        if (new Random().nextBoolean()) {
+            throw new CarCreationException("The production is currently stopped!");
+        }
         Car car = new Car();
         car.setIdentifier(UUID.randomUUID().toString());
         car.setColor(specification.getColor() == null? defaultCarColor : specification.getColor());

@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = EnvironmentalFriendlyValidator.class)
 @Documented
 public @interface EnvironmentalFriendly {
-    String message() default "";
+    String message() default "We no longer produce new non-electric car models!";
 
     Class<?> [] groups() default {};
 
