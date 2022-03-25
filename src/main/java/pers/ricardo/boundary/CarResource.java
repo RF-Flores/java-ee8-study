@@ -11,6 +11,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.stream.JsonCollectors;
 import javax.validation.Valid;
+import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -28,9 +29,29 @@ public class CarResource {
     @Context
     UriInfo uriInfo;
 
+    /* !!! This is another way of doing validations see retrieveCars with query param to see an example
+    @Inject
+    Validator validator;
+     */
+
+    /*
     @GET
     public JsonArray retrieveCars() {
         return carManufacture.retrieveCars()
+                .stream()
+                .map(c -> Json.createObjectBuilder()
+                        .add("engine", c.getEngineType().name())
+                        .add("color", c.getColor().name())
+                        .add("id",c.getIdentifier())
+                        .build()
+                ).collect(JsonCollectors.toJsonArray());
+    }
+     */
+
+    @GET
+    public JsonArray retrieveCars(@NotNull @QueryParam("filter") EngineType engineType) {
+        //validator.METHODcall -> THIS is another way to validate
+        return carManufacture.retrieveCars(engineType)
         .stream()
                 .map(c -> Json.createObjectBuilder()
                         .add("engine", c.getEngineType().name())
@@ -48,7 +69,7 @@ public class CarResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createCar(/* JsonObject jsonObject (Json alternative) */ @Valid @NotNull Specification specification) {
+    public Response createCar(/* JsonObject jsonObject (Json alternative) */@NotNull @Valid Specification specification) {
         /* JsonObject alternative
             !!!!!!!!!!! If using this, make sure the default constructor is NOT declared and that specification fields ARE final !!!!!!
         EngineType engine = EngineType.valueOf(jsonObject.getString("engine"));
@@ -62,8 +83,8 @@ public class CarResource {
         Car car = carManufacture.manufactureCar(specification);
 
         URI uri = uriInfo.getBaseUriBuilder() //URI built using the URI info from jaxRS this will give localhost:8080/cars/resource/cars
-                .path(this.getClass())
-                .path(this.getClass(), "retrieveCar") //here it adds /car.getIdentifier() at the end of the URI
+                .path(CarResource.class)
+                .path(CarResource.class, "retrieveCar") //here it adds /car.getIdentifier() at the end of the URI
                 .build(car.getIdentifier());
 
         return Response.created(uri)

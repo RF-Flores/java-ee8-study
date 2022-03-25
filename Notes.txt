@@ -1,3 +1,8 @@
+!!!! GENERAL NOTES !!!!!
+In order for Specificaton class to be properly mapped when sending it through the POST (if the desired result is for it to be mapped directly from the recieved
+request JSON), it needs to have a default constructor and setters and non final fields!!!!
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 First Section
 
@@ -72,8 +77,8 @@ second video ////////////////////////// Integrating Json-B
 ///////////////////////////////////////
 
 Integrating JSON-B from JSON binding
-@JsonTransient -> field wont be serialized when converting obj to byte
-@JsonProperty -> replaces the key name on the final json conversion to the string present on the annotation
+@JsonbTransient -> field wont be serialized when converting obj to byte
+@JsonbProperty -> replaces the key name on the final json conversion to the string present on the annotation
 
 
 ///////////////////////////////////////
@@ -99,3 +104,9 @@ both of these objects use the builder pattern
 fifth video /////////////////////////// - Validating communication
 ///////////////////////////////////////
 
+JaxRS validations -> @NotNull , @Size , @Min, @Max, @Email... etc
+@Valid -> runes the validations for the class
+@QueryParam("filter") --> this reads the parameter sent in the URL (URL/?filter=...)
+CUSTOM VALIDATOR -> see EnvironmentalFiendly annotation -> EnvironmentalFriendlyValidator -> annontation in filed, param, etc
+!!!This validator was made for specification, it is only meant for the createCar endpoint!!!!
+Another validation option is to use the Validator from javax.validation.Validator;

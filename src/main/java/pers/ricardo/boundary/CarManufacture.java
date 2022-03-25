@@ -39,9 +39,14 @@ public class CarManufacture {
         return carRepository.loadCars();
     }
 
+    //This is specific for the endpoint load cars that accepts a filter in the urls like this: URL/?filter=EngineType
+    public List<Car> retrieveCars(EngineType engineType) {
+        return carRepository.loadCars(engineType);
+    }
+
     public Car retrieveCar(String identifier) {
         return carRepository.loadCars().stream()
                 .filter(c -> c.getIdentifier().equals(identifier))
-                .findFirst().get();
+                .findFirst().get(); //Needs to be null checked otherwise it will throw exception
     }
 }
