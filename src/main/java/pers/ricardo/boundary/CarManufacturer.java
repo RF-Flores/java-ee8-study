@@ -2,22 +2,24 @@ package pers.ricardo.boundary;
 
 
 import pers.ricardo.control.CarFactory;
-import pers.ricardo.control.CarRepository;
+import pers.ricardo.control.ProcessTracker;
+import pers.ricardo.control.ProcessTrackingInterceptor;
+import pers.ricardo.control.Tracked;
 import pers.ricardo.entity.*;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @Stateless
-public class CarManufacture {
+//@Tracked(ProcessTracker.Category.MANUFACTURE) It is also possible to track the entire class
+public class CarManufacturer {
 
     @Inject
     CarFactory carFactory;
@@ -33,6 +35,10 @@ public class CarManufacture {
     @PersistenceContext(name = "prod")
     EntityManager entityManager;
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED) // This is the default value, it creates a new transaction if it wasnt called in another transaction context
+    //@Transactional(rollbackOn = CarStorateException.class, dontRollbackOn = ConstraintViolationException.class, value = Transactional.TxType.REQUIRED)
+    //@Interceptors(ProcessTrackingInterceptor.class) if we do not wish to tightly couple interceptors we can use custom interceptor binding
+    @Tracked(ProcessTracker.Category.MANUFACTURE) //This is way to track the method without it being tightly coupled.
     public Car manufactureCar(Specification specification) {
         Car car = carFactory.createCar(specification);
         entityManager.persist(car);

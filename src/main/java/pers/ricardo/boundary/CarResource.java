@@ -1,22 +1,18 @@
 package pers.ricardo.boundary;
 
 import pers.ricardo.entity.Car;
-import pers.ricardo.entity.Color;
 import pers.ricardo.entity.EngineType;
 import pers.ricardo.entity.Specification;
 
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.stream.JsonCollectors;
 import javax.validation.Valid;
-import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.net.URI;
-import java.util.List;
 
 @Path("cars") //the path will be ${domain}/resources/cars since we defined the jaxrsconfig as resources
 @Produces(MediaType.APPLICATION_JSON) //everthing we return will be as app json
@@ -24,7 +20,7 @@ import java.util.List;
 public class CarResource {
 
     @Inject
-    CarManufacture carManufacture;
+    CarManufacturer carManufacture;
 
     @Context
     UriInfo uriInfo;

@@ -172,3 +172,77 @@ on the seats table.
 ///////////////////////////////////////
 third video /////////////////////////// - Datasources
 ///////////////////////////////////////
+
+Not so clear on how to configure this, extra investigation is needed. Is the datasource currently configured, making an in-memory postgres db???
+
+///////////////////////////////////////
+fourth video ////////////////////////// - Transactions
+///////////////////////////////////////
+
+@TransactionAttribute(TransactionAttributeType.REQUIRED) // This is the default value, it creates a new transaction if it wasnt called in another transaction context
+TransactionAttributeType.REQUIRED --> will always create a new transaction and suspend the outer transaction if it exists
+
+!!! IMPORTANT !!!
+Only EJB beans come with transactions, CDI beans need to be anottated with @Transactional to create a transaction.
+//@Transactional(Transactional.TxType.REQUIRED) --> example on how to make the CDI bean create a transaction if one does not exist already
+
+!!! IMPORTANT 2 !!!
+thrown Application exceptions DO NOT cause the transaction to stop or roll back since this is a checked exception that needs to be declared
+in method signature, so it means that this expcetion is "expected" in other words, it means it is handled and does not require a rollback.
+
+RuntimeExceptions and not expected and these are system exceptions so they ar enot handled or "expected". This leads to transaction rollback.
+
+<On the exception class>
+To make ApplicationExceptions rollback transactions they need to be annotated with:@ApplicationException(rollback = true) see CarStorageException
+
+<On the CDI bean and EJB bean (see CarFactory)>
+//@Transactional(rollbackOn = CarStorateException.class) --> example on how to make the transaction rollback on a specific exception even for CDI beans
+//@Transactional(rollbackOn = CarStorateException.class, dontRollbackOn = ConstraintViolationException.class, value = Transactional.TxType.REQUIRED) -> example of the usage of this annotation java EE7
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fourth section , cross-cutting concers and concers that in the application domain itself and not business logic concerned suchs as caching and logging
+
+///////////////////////////////////////
+First video /////////////////////////// - Interceptors
+///////////////////////////////////////
+
+Annotations: 1 - @Interceptors, 2 - @Interceptor and 3 - @AroundInvoke
+1 -> use in the method to be intercepted
+2 -> Use in the class that will be the interceptor
+3 -> Use this annotation in the interceptor method will be invoked around the intercepted method (See ProcessTrackingInterceptor for an example)
+
+Also see tracking interceptor for an example of what to do when a method is intercepted.
+
+!!!IMPORTANT!!!
+In order for interceptors to work they need at least on interception binding.
+
+///////////////////////////////////////
+second video ////////////////////////// - Binding custom interceptors
+///////////////////////////////////////
+
+if we do not wish to tightly couple interceptors we can use custom interceptor binding
+
+See pers.ricardo.control.Tracked for an example
+This is used to track our business logic and is annotated with @InterceptorBinding
+
+@Tracked(ProcessTracker.Category.MANUFACTURE) //This is way to track the method without it being tightly coupled.
+Make sure the Tracked annotation has a value() method with reference to something. It is also a @Nonbinding attribute
+because we only have 1 interceptor and this interceptor handles all the specific values. In other words, the interceptor
+lookup will not be influenced by the values.
+
+the @Tracked(ProcessTracker.Category.MANUFACTURE) also needs to be used in the ProcessTrackingInterceptor to make it not tightly coupled.
+See the ProcessTrackingInterceptor method to see how to handle passed context info, Tracked annotation value for example.
+
+The @Tracked(ProcessTracker.Category.MANUFACTURE) COULD ALSO BE USED TO BIND IN THE CLASS. see CarManufacturer
+
+In order to specify when the tracker is activated it is needed one of the two:
+Annotate the class with @Priority(Interceptor.Priority.APPLICATION)
+OR
+configure the beans.xml, inside <beans> tag, put:
+<interceptors>
+    <class> CLASS NAME INCLUDING PACKAGE </class>
+</interceptors
+
+

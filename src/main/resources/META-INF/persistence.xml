@@ -5,15 +5,18 @@
     <persistence-unit name="prod" transaction-type="JTA">
         <!-- <jta-data-source>jdbc/CustomDS</jta-data-source>  Need to check what this is  -->
         <properties>
+            <!-- this does not seem to work, needs to be checked TODO, is this creating an in memory postgres DB?  -->
             <property name="hibernate.connection.url" value="jdbc:postgressql://localhost:5432/personalCarsProject"/>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
             <property name="hibernate.connection.username" value="postgres"/>
             <property name="hibernate.connection.password" value="admin"/>
             <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+
+
             <!-- This is used to drop and create the db from the ground up according to JPA mapping only useful for testing:
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
-            -->
+             -->
         </properties>
     </persistence-unit>
 </persistence>
