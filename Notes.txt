@@ -293,8 +293,21 @@ This project contains two implementations of a custom logger, one is done throug
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fifth section - Asynchronous behaviour
+fifth section - Asynchronous behaviour | async EJB | async CDI events | Managed threads | Define and use timers | async jax rs resources
 
 ///////////////////////////////////////
 First video /////////////////////////// - Asynchronous EJBs
 ///////////////////////////////////////
+
+How to define async EJB, @Asynchronus, Future<T> and AsyncResult<T>, impact on scopes
+
+See CarProcessor for an example of an Asynchronus EJB, the @Asynchronus ca be used in method level or at class level
+
+Can either return Future<T> or be void (fire and forget)
+
+Scopes are important because the scope could be done by the time the async method is proccessed. So injecting beans with greater scopes can create problems.
+
+///////////////////////////////////////
+second video ////////////////////////// - Asynchronous CDI events
+///////////////////////////////////////
+

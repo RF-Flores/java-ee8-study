@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 @Stateless
@@ -44,6 +45,9 @@ public class CarManufacturer {
     @Inject
     Consumer<Throwable> fatalLogger; //this is a way to use a CDI bean with java SE8 classes
 
+    @Inject
+    CarProcessor carProcessor; //This is the Asynchronus EJB example.
+
     @TransactionAttribute(TransactionAttributeType.REQUIRED) // This is the default value, it creates a new transaction if it wasnt called in another transaction context
     //@Transactional(rollbackOn = CarStorateException.class, dontRollbackOn = ConstraintViolationException.class, value = Transactional.TxType.REQUIRED)
     //@Interceptors(ProcessTrackingInterceptor.class) if we do not wish to tightly couple interceptors we can use custom interceptor binding
@@ -53,7 +57,7 @@ public class CarManufacturer {
         entityManager.persist(car);
         carCache.cacheCar(car); //caches the car when it is created
         carCreatedEvent.fire(new CarCreated(car.getIdentifier())); // this is a synchronous event, the business logic hangs until the observer has finished
-        //!!!! RANDOMIZED EXPCETION TO SEE LOGGING WORKING!!!!
+        //!!!! RANDOMIZED EXCEPTION TO SEE LOGGING WORKING!!!!
         try {
             if (new Random().nextBoolean()) {
                 throw new CarCreationException("Ooops better luck next time! Random exception for log testing!");
@@ -62,7 +66,9 @@ public class CarManufacturer {
             //fatalLogger.fatal(e); a sever log level example
             fatalLogger.accept(e);
         }
-        //!!!! RANDOMIZED EXPCETION TO SEE LOGGING WORKING!!!!
+        Future<String> resultFuture = carProcessor.processNewCar(car); //We can them get the result, can also be a void so it becomes a fire and forget
+
+        //!!!! RANDOMIZED EXCEPTION TO SEE LOGGING WORKING!!!!
         return car;
     }
 
