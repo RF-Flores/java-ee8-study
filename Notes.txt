@@ -322,3 +322,7 @@ this means the event wont be handled directly in the business execution.
 third video /////////////////////////// - Managed Threads
 ///////////////////////////////////////
 
+We should not start the threading manually, it should always be done by the container. Oterwise we create potential resouce leaks.
+In order to create new Threads and let the container handle them, use the Message ExecutorService.
+
+See carprocessor for extra details on how to handle streams if we had a stream. It would have to be handled by a jdk thread pool and not the application container thread pool.

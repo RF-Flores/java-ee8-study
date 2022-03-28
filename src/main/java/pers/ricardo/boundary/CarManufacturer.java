@@ -7,6 +7,7 @@ import pers.ricardo.entity.*;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -51,6 +52,9 @@ public class CarManufacturer {
     @Inject
     CarProcessor carProcessor; //This is the Asynchronus EJB example.
 
+    @Inject
+    ManagedExecutorService mes;
+
     @TransactionAttribute(TransactionAttributeType.REQUIRED) // This is the default value, it creates a new transaction if it wasnt called in another transaction context
     //@Transactional(rollbackOn = CarStorateException.class, dontRollbackOn = ConstraintViolationException.class, value = Transactional.TxType.REQUIRED)
     //@Interceptors(ProcessTrackingInterceptor.class) if we do not wish to tightly couple interceptors we can use custom interceptor binding
@@ -69,7 +73,8 @@ public class CarManufacturer {
             //fatalLogger.fatal(e); a sever log level example
             fatalLogger.accept(e);
         }
-        Future<String> resultFuture = carProcessor.processNewCar(car); //We can them get the result, can also be a void so it becomes a fire and forget
+        Future<String> resultFuture = carProcessor.processNewCarAsync(car); //We can them get the result, can also be a void so it becomes a fire and forget
+        mes.execute(() -> carProcessor.processNewCar(car)); //this is still a synchronous way, we can thread it via the MessageExecutorService. A container managed thread is used to handle this.
         carCreatedAsync.fireAsync(new CarCreated(car.getIdentifier())); //This event is fired in an async fashion
         return car;
     }
