@@ -46,6 +46,9 @@ public class CarManufacturer {
     Consumer<Throwable> fatalLogger; //this is a way to use a CDI bean with java SE8 classes
 
     @Inject
+    Event<CarCreated> carCreatedAsync;
+
+    @Inject
     CarProcessor carProcessor; //This is the Asynchronus EJB example.
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED) // This is the default value, it creates a new transaction if it wasnt called in another transaction context
@@ -56,7 +59,7 @@ public class CarManufacturer {
         Car car = carFactory.createCar(specification);
         entityManager.persist(car);
         carCache.cacheCar(car); //caches the car when it is created
-        carCreatedEvent.fire(new CarCreated(car.getIdentifier())); // this is a synchronous event, the business logic hangs until the observer has finished
+        carCreatedEvent.fire(new CarCreated(car.getIdentifier())); // this is a synchronous event, the business logic hangs until the observer has finished. The annotation on the listener and been made async so this event is no longer synchronous.
         //!!!! RANDOMIZED EXCEPTION TO SEE LOGGING WORKING!!!!
         try {
             if (new Random().nextBoolean()) {
@@ -67,8 +70,7 @@ public class CarManufacturer {
             fatalLogger.accept(e);
         }
         Future<String> resultFuture = carProcessor.processNewCar(car); //We can them get the result, can also be a void so it becomes a fire and forget
-
-        //!!!! RANDOMIZED EXCEPTION TO SEE LOGGING WORKING!!!!
+        carCreatedAsync.fireAsync(new CarCreated(car.getIdentifier())); //This event is fired in an async fashion
         return car;
     }
 

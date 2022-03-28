@@ -311,3 +311,14 @@ Scopes are important because the scope could be done by the time the async metho
 second video ////////////////////////// - Asynchronous CDI events
 ///////////////////////////////////////
 
+One way of making te CarCreatedEvent async, would be add the annotations @Stateless and @Asynchronus.
+
+Another way it so change the listener annotation from @Observes to @ObservesAsync
+
+Synchronous events can also be further customized with @Observes(during = TransactionPhase...) to change how it is handled, if its during after or before the transaction
+this means the event wont be handled directly in the business execution.
+
+///////////////////////////////////////
+third video /////////////////////////// - Managed Threads
+///////////////////////////////////////
+
