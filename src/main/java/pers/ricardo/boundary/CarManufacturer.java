@@ -12,6 +12,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Consumer;
 
 @Stateless
 //@Tracked(ProcessTracker.Category.MANUFACTURE) It is also possible to track the entire class
@@ -34,6 +36,14 @@ public class CarManufacturer {
     @Inject
     CarCache carCache;
 
+    /* this is one way of creating a looger
+    @Inject
+    FatalLogger fatalLogger;
+     */
+
+    @Inject
+    Consumer<Throwable> fatalLogger; //this is a way to use a CDI bean with java SE8 classes
+
     @TransactionAttribute(TransactionAttributeType.REQUIRED) // This is the default value, it creates a new transaction if it wasnt called in another transaction context
     //@Transactional(rollbackOn = CarStorateException.class, dontRollbackOn = ConstraintViolationException.class, value = Transactional.TxType.REQUIRED)
     //@Interceptors(ProcessTrackingInterceptor.class) if we do not wish to tightly couple interceptors we can use custom interceptor binding
@@ -43,6 +53,16 @@ public class CarManufacturer {
         entityManager.persist(car);
         carCache.cacheCar(car); //caches the car when it is created
         carCreatedEvent.fire(new CarCreated(car.getIdentifier())); // this is a synchronous event, the business logic hangs until the observer has finished
+        //!!!! RANDOMIZED EXPCETION TO SEE LOGGING WORKING!!!!
+        try {
+            if (new Random().nextBoolean()) {
+                throw new CarCreationException("Ooops better luck next time! Random exception for log testing!");
+            }
+        } catch (Exception e) {
+            //fatalLogger.fatal(e); a sever log level example
+            fatalLogger.accept(e);
+        }
+        //!!!! RANDOMIZED EXPCETION TO SEE LOGGING WORKING!!!!
         return car;
     }
 
