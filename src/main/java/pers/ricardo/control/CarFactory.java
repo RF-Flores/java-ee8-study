@@ -17,6 +17,10 @@ public class CarFactory {
     //@Named("diesel") --> not type safe since it can be annoted elsewhere create custom annotation for typesafety
     private Color defaultCarColor;
 
+    @Inject
+    @Config("identfier.prefix")
+    String identifierPrefix; //We can specify the default by using an exposer class and then we would need a qualifier if we had several string contexts
+
     //@Transactional(Transactional.TxType.REQUIRED) --> example on how to make the CDI bean create a transaction if one does not exist already
     //@Transactional(rollbackOn = CarStorateException.class) --> example on how to make the transaction rollback on a specific exception even for CDI beans
     public Car createCar(Specification specification) {
@@ -25,7 +29,7 @@ public class CarFactory {
             throw new CarCreationException("The production is currently stopped!");
         }
         Car car = new Car();
-        car.setIdentifier(UUID.randomUUID().toString());
+        car.setIdentifier(identifierPrefix + "-" + UUID.randomUUID().toString());
         car.setColor(specification.getColor() == null? defaultCarColor : specification.getColor());
         car.setEngineType(specification.getEngineType());
         return car;

@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 
 @Interceptor()
-@Tracked(ProcessTracker.Category.MANUFACTURE) //This is fundamental in order to not have to tightly couple interceptors.
+@Tracked(ProcessTracker.Category.UNSUSED) //This is fundamental in order to not have to tightly couple interceptors.
 @Priority(Interceptor.Priority.APPLICATION) // this is a way of specifying how will the interceptor be active see notes
 public class ProcessTrackingInterceptor {
 

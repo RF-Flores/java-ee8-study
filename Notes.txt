@@ -246,3 +246,27 @@ configure the beans.xml, inside <beans> tag, put:
 </interceptors
 
 
+///////////////////////////////////////
+third video /////////////////////////// - Configuring Java EE applications
+///////////////////////////////////////
+
+It is another way of retrieving default values for variables or even configuration value.
+For a default field example: see "CarFactory.java" identifier prefix
+It requires a Custom Qualifier annotation, in this case we call it config so @Config("configKeyString")
+This annotation itself requires the @Qualifier and the non-binding value aspect:
+    @Nonbinding
+    String value();
+Then on the ConfigurationExposer it is where we produce the value:
+    @Produces
+        @Config("unsused")
+        public String exposeConfig(InjectionPoint injectionPoint) {
+        }
+this method takes the injection point and the value passed on by the qualifier annotation and may search a file or DB for the value.
+!!! IMPORTANT !!!
+If we get the value through a file it is required to make the bean application scopped so it will always read the file everytime it is called.
+!!!!!!!!!!!!!!!!!!!! This class is a good example how to build the stream that gets the config file!!!!!!!!!!!!!!!!!!!!!!!!!
+
+///////////////////////////////////////
+fourth video ////////////////////////// - Caching
+///////////////////////////////////////
+
