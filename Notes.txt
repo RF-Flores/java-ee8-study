@@ -270,3 +270,16 @@ If we get the value through a file it is required to make the bean application s
 fourth video ////////////////////////// - Caching
 ///////////////////////////////////////
 
+Custom cache or using Jcache
+
+Custom cache -> see CarCache.java for a custom in-memory cache built with a map which gets all the cars present on application startup
+!!!! THIS CACHE WAS USED IN CarManufacturer TO RETRIEVE ALL CARS, IT SHOULD LEAD TO STRANGE BEHAVIOUR IF WE INSERT A CAR AND TRY TO CHECK DB IF ITS THERE AFTERWARDS!!!!!
+This custom cache can also be done via custom interceptor!!!!
+
+This can be done with caching frameworks. Like JCache
+
+///////////////////////////////////////
+fourth video ////////////////////////// - Logging
+///////////////////////////////////////
+
+

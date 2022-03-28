@@ -1,10 +1,7 @@
 package pers.ricardo.boundary;
 
 
-import pers.ricardo.control.CarFactory;
-import pers.ricardo.control.ProcessTracker;
-import pers.ricardo.control.ProcessTrackingInterceptor;
-import pers.ricardo.control.Tracked;
+import pers.ricardo.control.*;
 import pers.ricardo.entity.*;
 
 import javax.ejb.Stateless;
@@ -12,7 +9,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
@@ -35,6 +31,9 @@ public class CarManufacturer {
     @PersistenceContext(name = "prod")
     EntityManager entityManager;
 
+    @Inject
+    CarCache carCache;
+
     @TransactionAttribute(TransactionAttributeType.REQUIRED) // This is the default value, it creates a new transaction if it wasnt called in another transaction context
     //@Transactional(rollbackOn = CarStorateException.class, dontRollbackOn = ConstraintViolationException.class, value = Transactional.TxType.REQUIRED)
     //@Interceptors(ProcessTrackingInterceptor.class) if we do not wish to tightly couple interceptors we can use custom interceptor binding
@@ -42,6 +41,7 @@ public class CarManufacturer {
     public Car manufactureCar(Specification specification) {
         Car car = carFactory.createCar(specification);
         entityManager.persist(car);
+        carCache.cacheCar(car); //caches the car when it is created
         carCreatedEvent.fire(new CarCreated(car.getIdentifier())); // this is a synchronous event, the business logic hangs until the observer has finished
         return car;
     }
@@ -55,10 +55,13 @@ public class CarManufacturer {
     }
      */
 
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! THIS METHOD IS USING CACHED CARS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @SuppressWarnings("unchecked") //This is neeed to avoid needing to check the assignment
     public List<Car> retrieveCars() {
-        return entityManager.createNamedQuery(Car.FIND_ALL).getResultList();
+        List<Car> cachedCars = loadCachedCars();
+        return cachedCars == null || cachedCars.isEmpty() ?  entityManager.createNamedQuery(Car.FIND_ALL).getResultList() : cachedCars;
     }
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! THIS METHOD IS USING THE CACHED CARS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     //This is specific for the endpoint load cars that accepts a filter in the urls like this: URL/?filter=EngineType
     @SuppressWarnings("unchecked") //This is neeed to avoid needing to check the assignment
@@ -88,4 +91,8 @@ public class CarManufacturer {
                 .findFirst().get(); //Needs to be null checked otherwise it will throw exception
     }
      */
+
+    private List<Car> loadCachedCars () {
+        return carCache.retrieveCars();
+    }
 }

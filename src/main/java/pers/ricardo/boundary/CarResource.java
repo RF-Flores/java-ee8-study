@@ -45,6 +45,19 @@ public class CarResource {
      */
 
     @GET
+    @Path("all")
+    public JsonArray retrieveCars(){
+        return carManufacture.retrieveCars()
+                .stream()
+                .map(c -> Json.createObjectBuilder()
+                        .add("engine", c.getEngineType().name())
+                        .add("color", c.getColor().name())
+                        .add("id",c.getIdentifier())
+                        .build()
+                ).collect(JsonCollectors.toJsonArray());
+    }
+
+    @GET
     public JsonArray retrieveCars(@NotNull @QueryParam("filter") EngineType engineType) {
         //validator.METHODcall -> THIS is another way to validate
         return carManufacture.retrieveCars(engineType)
