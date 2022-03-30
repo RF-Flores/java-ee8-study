@@ -389,3 +389,16 @@ sixth section - Accessing external systems
 First video /////////////////////////// - Accessing HTTP using JAX-RS
 ///////////////////////////////////////
 
+Using JAX-RS client to access external systems
+
+Managed Executor Service is needed for JAX-RS client requests.
+
+The clinet should be init through a postConstruct method AND the class should be ApplicationScopped / Singleton because the
+client is a resource intensive object.
+
+Web targets are basicaly URI's, see IdentifierAcessor in control package for an example.
+
+///////////////////////////////////////
+second video /////////////////////////// - Extended Client usage
+///////////////////////////////////////
+

@@ -1,14 +1,13 @@
 package pers.ricardo.control;
 
-import pers.ricardo.CarStorateException;
 import pers.ricardo.entity.Specification;
 import pers.ricardo.entity.Car;
 import pers.ricardo.entity.Color;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +26,9 @@ public class CarFactory {
     @Inject
     ManagedScheduledExecutorService mses; //This is needed if we wish to create a sceduled job for a CDI bean
 
+    @Inject
+    private IdentifierAcessor identifierAcessor;
+
     //@Transactional(Transactional.TxType.REQUIRED) --> example on how to make the CDI bean create a transaction if one does not exist already
     //@Transactional(rollbackOn = CarStorateException.class) --> example on how to make the transaction rollback on a specific exception even for CDI beans
     public Car createCar(Specification specification) {
@@ -35,7 +37,8 @@ public class CarFactory {
             throw new CarCreationException("The production is currently stopped!");
         }
         Car car = new Car();
-        car.setIdentifier(identifierPrefix + "-" + UUID.randomUUID().toString());
+        //car.setIdentifier(identifierAcessor.retrieveCarUUID(specification)); example usage of JAX-RS http client
+        car.setIdentifier(identifierPrefix + "-" + UUID.randomUUID());
         car.setColor(specification.getColor() == null? defaultCarColor : specification.getColor());
         car.setEngineType(specification.getEngineType());
         return car;
@@ -49,4 +52,5 @@ public class CarFactory {
     public void doSomething() {
         System.out.println("------I was scheduled to print this-------");
     }
+
 }
