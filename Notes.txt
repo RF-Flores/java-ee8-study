@@ -326,3 +326,27 @@ We should not start the threading manually, it should always be done by the cont
 In order to create new Threads and let the container handle them, use the Message ExecutorService.
 
 See carprocessor for extra details on how to handle streams if we had a stream. It would have to be handled by a jdk thread pool and not the application container thread pool.
+
+//////////////////////////////////////
+fourth video ///////////////////////// - Timers
+//////////////////////////////////////
+
+Scheduled jobs -> EJB, @Schedule, @Startup
+
+CarCache.logCars() -> Since this is a Singleton that is always created on startup, we can annotate the method @Schedule. it uses linux cron notation
+
+Scope differences:
+If cache was not annotated with @Startup and still had @Singleton we would not be sure when the schedule would start since the singleton would only be
+instanced when it was called business-wise. After it was instanced the first the schedule would be stable.
+
+If it is a EJB annotated with Statless or Stateful the schedule would run everytime the instance is created.
+
+All of the above is valid for EJB.
+
+---> for cdi beans, use ManagedScheduledExecutorService. See CarFactory to get an example on how to schedule a CDI managed bean
+
+///////////////////////////////////////
+Fifth video /////////////////////////// - Asynchronous JAX-RS resouces
+///////////////////////////////////////
+
+

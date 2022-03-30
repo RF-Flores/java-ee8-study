@@ -8,5 +8,16 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/personalCarsProject</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="prod/Hibernate" uuid="fc04d1b5-4d20-4d68-abd1-1a7dfa8d6845">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>Hibernate
+
+C:/Users/0102521/IdeaProjects/UdemyJavaEE/src/main/resources/META-INF/persistence.xml</remarks>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgressql://localhost:5432/personalCarsProject</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

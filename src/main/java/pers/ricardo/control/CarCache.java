@@ -5,6 +5,7 @@ import pers.ricardo.entity.Car;
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
+import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,6 +28,7 @@ public class CarCache {
         loadCars();
     }
 
+    @Schedule(hour = "*") //Since this is a Singleton that is always created on startup, we can annotate the method @Schedule. it uses linux cron notation
     public void loadCars() { //This can be invocked on a timer to refresh the
         List<Car> carsFromDB = entityManager.createNamedQuery(Car.FIND_ALL, Car.class).getResultList();
         carsFromDB.forEach(c -> cache.put(c.getIdentifier(),c));
