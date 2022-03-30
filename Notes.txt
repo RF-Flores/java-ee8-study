@@ -346,7 +346,46 @@ All of the above is valid for EJB.
 ---> for cdi beans, use ManagedScheduledExecutorService. See CarFactory to get an example on how to schedule a CDI managed bean
 
 ///////////////////////////////////////
-Fifth video /////////////////////////// - Asynchronous JAX-RS resouces
+Fifth video /////////////////////////// - Asynchronous JAX-RS resources
 ///////////////////////////////////////
 
+
+Async responses might be needed in order to not consumer the request thread pool
+See CarManufacturer.createCarAsync for an example.
+
+Sort description: By passing the AsyncResponse in the parameter of the request, we can pass the responsibility of execution to the Executor Service thread pool.
+
+This is the way of doing it for any class, even CDI or EBJ beans can have these type of endpoints.
+
+!!!!! The below example is less flexible as it means the class must be a CDI or EJB managed bean !!!!!!
+
+For EJB/CDI beans (@Stateless or Stateful annotation):
+the method could simply be (no need for the executor service):
+
+    @POST
+    @Asynchronous ----> import javax.ejb.Asynchronous;
+    @Path("/async")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void createCarAsyncRequest(@Valid @NotNull Specification specification,
+                                   @Suspended AsyncResponse asyncResponse) {
+        asyncResponse.resume(createCarAsyncProccess(specification));
+    }
+
+!!!!! The above example is less flexible as it means the class must be a CDI or EJB managed bean !!!!!!
+
+------------Since JAX-RS 2.1 and Java EE 8 there is another alternative --------------------------
+
+See CarManufacturer.createCarAsyncModern
+
+It still requires the Executor service and makes use of CompletionStage and CompletionFuture.
+Added a more advanced timeout example.
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+sixth section - Accessing external systems
+
+///////////////////////////////////////
+First video /////////////////////////// - Accessing HTTP using JAX-RS
+///////////////////////////////////////
 

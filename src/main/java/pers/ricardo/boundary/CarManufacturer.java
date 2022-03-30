@@ -123,7 +123,7 @@ public class CarManufacturer {
                 .filter(c -> c.getIdentifier().equals(identifier))
                 .findFirst().get(); //Needs to be null checked otherwise it will throw exception
     }
-     */
+     !!!!!!!!!!No longer needed since we have an entity manager now!!!!!           */
 
     private List<Car> loadCachedCars () {
         return carCache.retrieveCars();

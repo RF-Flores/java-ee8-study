@@ -4,6 +4,7 @@ import pers.ricardo.entity.Car;
 import pers.ricardo.entity.EngineType;
 import pers.ricardo.entity.Specification;
 
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -11,8 +12,13 @@ import javax.json.stream.JsonCollectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.*;
 import java.net.URI;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 
 @Path("cars") //the path will be ${domain}/resources/cars since we defined the jaxrsconfig as resources
 @Produces(MediaType.APPLICATION_JSON) //everthing we return will be as app json
@@ -29,6 +35,9 @@ public class CarResource {
     @Inject
     Validator validator;
      */
+
+    @Inject
+    ManagedExecutorService mes; //This is required for async executtion
 
     /*
     @GET
@@ -109,4 +118,37 @@ public class CarResource {
          */
 
     }
+
+    @POST
+    @Path("/async")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void createCarAsyncRequest(@Valid @NotNull Specification specification,
+                                   @Suspended AsyncResponse asyncResponse) {
+        mes.execute(() -> asyncResponse.resume(createCarAsyncProccess(specification))); //This makes sure we send the response back once it is done
+        //This also makes sure we dont use the HTTP reserved thread pool but the Executor service thread pool.
+    }
+
+    private Response createCarAsyncProccess(Specification specification) {
+        carManufacture.manufactureCar(specification);
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    //--------------------- Async endpoint alternative since JAX-RS 2.1 and Java EE 8 ---------------------
+
+    @POST
+    @Path("/asyncModern")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public CompletionStage<Response> createCarAsyncRequestModern(@Valid @NotNull Specification specification,
+                                                                 @Suspended AsyncResponse asyncResponse /*This is a more advanced way*/) {
+
+        asyncResponse.setTimeout(10, TimeUnit.SECONDS);
+        asyncResponse.setTimeoutHandler(response ->
+                response.resume(Response.status(Response.Status.REQUEST_TIMEOUT).build())); //This makes sure that if the time is reached, the response will be a timeout
+
+
+        return CompletableFuture.supplyAsync(() -> createCarAsyncProccess(specification), mes);
+    }
+
+
+
 }
